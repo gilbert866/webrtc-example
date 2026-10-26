@@ -1,0 +1,56 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Vercel
+        run: |
+          echo "Deploying to Vercel..."
+          
+          # Install Vercel CLI
+          npm install -g vercel@latest
+          
+          # Deploy to Vercel
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+          
+          echo "✅ Vercel deployment completed"
+
+      - name: Deployment Summary
+        run: |
+          echo "=========================================="
+          echo "🚀 DEPLOYMENT COMPLETE"
+          echo "=========================================="
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Status: ${{ job.status }}"
+          echo "Deployment: Vercel CLI deployment"
+          echo "=========================================="
+          
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "🎉 Deployment completed successfully!"
+            echo "Your site should be live on Vercel!"
+          else
+            echo "❌ Deployment failed. Please check the logs above."
+          fi
