@@ -117,13 +117,24 @@ export class PeerConnectionEngine extends EventEmitter {
    * Seamlessly replace an audio or video track mid-call without renegotiation
    */
   async replaceTrack(kind, newTrack) {
-    const sender = this.pc.getSenders().find(s => s.track && s.track.kind === kind);
+    let sender = this.pc.getSenders().find(s => s.track && s.track.kind === kind);
+    if (!sender) {
+      const transceiver = this.pc.getTransceivers?.().find(t =>
+        (t.receiver?.track?.kind === kind) ||
+        (t.sender?.track?.kind === kind)
+      );
+      if (transceiver?.sender) {
+        sender = transceiver.sender;
+      }
+    }
+
     if (sender) {
       this.logger.info(`Replacing ${kind} track via RTCRtpSender.replaceTrack`);
-      await sender.replaceTrack(newTrack);
-    } else if (newTrack && this.localStream) {
+      await sender.replaceTrack(newTrack || null);
+    } else if (newTrack) {
       this.logger.info(`Adding new ${kind} track via addTrack`);
-      this.pc.addTrack(newTrack, this.localStream);
+      const stream = this.localStream || new MediaStream();
+      this.pc.addTrack(newTrack, stream);
     }
   }
 

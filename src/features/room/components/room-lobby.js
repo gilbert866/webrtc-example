@@ -70,13 +70,13 @@ export class RoomLobby {
 
           <!-- Quick Media Toggles -->
           <div class="lobby-controls">
-            <button class="btn-icon" id="lobby-btn-mic" title="Toggle Mic" aria-label="Toggle Mic">
+            <button type="button" class="btn-icon" id="lobby-btn-mic" title="Toggle Mic" aria-label="Toggle Mic">
               <span id="lobby-mic-icon">${icons.mic('', 18)}</span>
             </button>
-            <button class="btn-icon" id="lobby-btn-cam" title="Toggle Camera" aria-label="Toggle Camera">
+            <button type="button" class="btn-icon" id="lobby-btn-cam" title="Toggle Camera" aria-label="Toggle Camera">
               <span id="lobby-cam-icon">${icons.video('', 18)}</span>
             </button>
-            <button class="btn-icon" id="lobby-btn-settings" title="Audio/Video Settings" aria-label="Settings">
+            <button type="button" class="btn-icon" id="lobby-btn-settings" title="Audio/Video Settings" aria-label="Settings">
               ${icons.settings('', 18)}
             </button>
           </div>

@@ -71,7 +71,7 @@ export class CallControls {
       <div class="dock-separator"></div>
 
       <!-- Hang Up / Leave Call -->
-      <button class="btn btn-danger btn-icon" id="btn-hangup" title="Leave Call" aria-label="End Call" style="width: 48px; height: 48px; border-radius: var(--radius-pill);">
+      <button class="btn btn-danger btn-icon" id="btn-hangup" title="Leave Call" aria-label="End Call">
         ${icons.phoneOff('', 22)}
       </button>
     `;

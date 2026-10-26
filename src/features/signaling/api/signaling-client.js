@@ -51,10 +51,10 @@ export class SignalingClient extends EventEmitter {
   }
 
   /**
-   * Broadcast local media mute/unmute state to remote peer
+   * Broadcast local media mute/unmute state to remote peers
    */
-  sendMediaState(audioEnabled, videoEnabled) {
-    this.send('media-state', null, { audioEnabled, videoEnabled });
+  sendMediaState(audioEnabled, videoEnabled, isScreenSharing = false) {
+    this.send('media-state', null, { audioEnabled, videoEnabled, isScreenSharing });
   }
 
   /**

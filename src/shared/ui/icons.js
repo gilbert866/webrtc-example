@@ -147,5 +147,18 @@ export const icons = {
   pip: (cls, size) => createSvg(`
     <rect width="18" height="14" x="3" y="5" rx="2"/>
     <rect width="6" height="4" x="13" y="13" rx="1"/>
+  `, cls, size),
+
+  pin: (cls, size) => createSvg(`
+    <line x1="12" x2="12" y1="17" y2="22"/>
+    <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+  `, cls, size),
+
+  pinOff: (cls, size) => createSvg(`
+    <line x1="2" x2="22" y1="2" y2="22"/>
+    <line x1="12" x2="12" y1="17" y2="22"/>
+    <path d="M9 9v1.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h12"/>
+    <path d="M15 9.34V6h1a1 1 0 0 0 0-2H8"/>
   `, cls, size)
 };
+

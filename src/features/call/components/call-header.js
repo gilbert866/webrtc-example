@@ -37,6 +37,12 @@ export class CallHeader {
           <span id="copy-icon-wrap">${icons.copy('', 14)}</span>
         </button>
 
+        <!-- Participant Count Badge -->
+        <div class="badge badge-secondary" id="call-participant-badge" title="Participants in room" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding: 6px 10px;">
+          ${icons.users('', 14)}
+          <span id="header-participant-count">1 participant</span>
+        </div>
+
         <!-- Call Duration Counter -->
         <div class="badge badge-info" id="call-timer-badge" style="font-family: var(--font-mono); font-size: 13px;">
           00:00
@@ -73,6 +79,14 @@ export class CallHeader {
     if (!this.element) return;
     const el = this.element.querySelector('#header-room-id');
     if (el) el.textContent = roomId;
+  }
+
+  updateParticipantCount(count) {
+    if (!this.element) return;
+    const el = this.element.querySelector('#header-participant-count');
+    if (el) {
+      el.textContent = `${count} ${count === 1 ? 'participant' : 'participants'}`;
+    }
   }
 
   updateDuration(seconds) {

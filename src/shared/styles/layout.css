@@ -60,81 +60,20 @@
   background: #090c13;
 }
 
-/* Video Stage Grid */
-.video-stage {
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  padding-bottom: 96px; /* space for floating dock */
-  gap: 16px;
-  overflow: hidden;
-}
-
-/* Video Container Styles */
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  max-width: 1280px;
-  max-height: 720px;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  background: #0d121c;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-normal);
-}
-
-.video-container.speaking {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
-}
-
+/* Generic video element (used by lobby preview and call tiles) */
 .video-element {
   width: 100%;
   height: 100%;
   object-fit: cover;
   background: #0b0f19;
+  display: block;
 }
 
 .video-element.mirrored {
   transform: scaleX(-1);
 }
 
-.video-overlay-info {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: rgba(10, 13, 20, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  z-index: 5;
-}
-
-.video-overlay-status {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  gap: 8px;
-  z-index: 5;
-}
-
+/* Generic placeholder shown when camera is off (lobby preview) */
 .video-placeholder {
   position: absolute;
   inset: 0;
@@ -146,45 +85,393 @@
   background: radial-gradient(circle at center, #172134 0%, #0d121c 100%);
   z-index: 2;
 }
+
+/* Video Stage Main Wrapper */
+.video-stage {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px 96px 20px; /* space for floating bottom control dock */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ----------------------------------------------------
+   1. Google Meet Adaptive Multi-Participant Grid
+   ---------------------------------------------------- */
+.video-grid-container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  max-width: 1600px;
+  max-height: 100%;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* 1 Participant (Centered Hero Tile) */
+.video-grid-container[data-count="1"] {
+  grid-template-columns: 1fr;
+  max-width: 960px;
+  max-height: 560px;
+}
+
+/* 2 Participants (Side-by-side) */
+.video-grid-container[data-count="2"] {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 1400px;
+  max-height: 540px;
+}
+
+/* 3 Participants */
+.video-grid-container[data-count="3"] {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1540px;
+  max-height: 520px;
+}
+
+/* 4 Participants (2 x 2 balanced matrix) */
+.video-grid-container[data-count="4"] {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  max-width: 1300px;
+}
+
+/* 5 or 6 Participants (3 x 2 matrix) */
+.video-grid-container[data-count="5"],
+.video-grid-container[data-count="6"] {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  max-width: 1560px;
+}
+
+/* 7 to 9 Participants (3 x 3 matrix) */
+.video-grid-container[data-count="7"],
+.video-grid-container[data-count="8"],
+.video-grid-container[data-count="9"] {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  max-width: 1560px;
+}
+
+/* 10+ Participants */
+.video-grid-container[data-count="10"],
+.video-grid-container[data-count="11"],
+.video-grid-container[data-count="12"] {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  max-width: 1600px;
+}
+
+/* ----------------------------------------------------
+   2. Google Meet Spotlight / Stage Layout (Pinning & Presentation)
+   ---------------------------------------------------- */
+.spotlight-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 16px;
+  max-width: 1800px;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.spotlight-main {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.presenting-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.spotlight-main .participant-tile {
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
+}
+
+/* Filmstrip Sidebar */
+.filmstrip-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(13, 18, 28, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.filmstrip-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 4px;
+}
+
+.filmstrip-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.filmstrip-item-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filmstrip-item-wrap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.filmstrip-item-wrap .participant-tile {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+}
+
+/* ----------------------------------------------------
+   3. Participant Tile Component
+   ---------------------------------------------------- */
+.participant-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #0b0f17;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-sizing: border-box;
+}
+
+/* Active Speaker Green Ring (Google Meet style) */
+.participant-tile.speaking {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35), 0 0 25px rgba(16, 185, 129, 0.3);
+}
+
+/* Video Element */
+.participant-tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #080c14;
+  display: block;
+}
+
+.participant-tile video.mirrored {
+  transform: scaleX(-1);
+}
+
+/* Screen sharing videos must be CONTAINED to preserve full text/slides readability */
+.participant-tile video.screen-share {
+  object-fit: contain !important;
+  background: #030508 !important;
+}
+
+/* Avatar placeholder when camera is off */
+.participant-tile .video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: radial-gradient(circle at center, #162033 0%, #0a0d15 100%);
+  z-index: 2;
+}
+
 .avatar-circle {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: var(--color-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: #fff;
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
   transition: transform var(--transition-bounce);
 }
+
 .avatar-circle.speaking {
   animation: pulse-ring 1.5s infinite;
 }
 
-/* Local Video Picture-in-Picture (Floating Box) */
-.pip-video-container {
+/* Filmstrip avatar sizing */
+.filmstrip-item-wrap .avatar-circle {
+  width: 44px;
+  height: 44px;
+  font-size: 16px;
+}
+
+/* Bottom overlay info pill */
+.tile-info-pill {
   position: absolute;
-  top: 24px;
-  right: 24px;
-  width: 260px;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius-lg);
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(10, 13, 20, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  z-index: 5;
+  pointer-events: none;
+  max-width: calc(100% - 24px);
+}
+
+.tile-name-label {
+  display: inline-block;
   overflow: hidden;
-  background: #111827;
-  border: 2px solid var(--glass-border);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-  z-index: 20;
-  cursor: grab;
-  transition: width 0.3s ease, border-color var(--transition-fast);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 130px;
 }
-.pip-video-container:hover {
-  border-color: rgba(99, 102, 241, 0.6);
+
+.filmstrip-item-wrap .tile-info-pill {
+  bottom: 6px;
+  left: 6px;
+  padding: 3px 7px;
+  font-size: 11px;
 }
-.pip-video-container.minimized {
-  width: 140px;
+.filmstrip-item-wrap .tile-name-label {
+  max-width: 70px;
+}
+
+/* Top-right tile actions (Pin & Fullscreen buttons) */
+.tile-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 6;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.participant-tile:hover .tile-actions,
+.participant-tile:focus-within .tile-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-tile-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-tile-action:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.08);
+}
+
+.btn-tile-action.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.filmstrip-item-wrap .tile-actions {
+  top: 6px;
+  right: 6px;
+}
+
+.filmstrip-item-wrap .btn-tile-action {
+  width: 26px;
+  height: 26px;
+}
+
+/* Empty room prompt */
+.empty-room-prompt {
+  position: absolute;
+  bottom: 110px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.empty-room-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: #fff;
 }
 
 /* Floating Bottom Control Bar Dock */
@@ -205,6 +492,17 @@
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.08);
   z-index: 30;
   transition: all var(--transition-normal);
+  box-sizing: border-box;
+  max-width: 95vw;
+}
+.control-dock .btn-icon {
+  flex-shrink: 0;
+}
+.control-dock #btn-hangup {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
 }
 .dock-separator {
   width: 1px;
@@ -377,27 +675,294 @@
   margin-bottom: 28px;
 }
 
-/* Responsive adjustments */
+/* ====================================================
+   Comprehensive Mobile & Tablet Responsiveness
+   ==================================================== */
+
 @media (max-width: 860px) {
+  /* Lobby Screen */
   .lobby-card {
     grid-template-columns: 1fr;
+    max-width: 520px;
   }
   .lobby-preview-col {
+    padding: 20px;
     border-right: none;
     border-bottom: 1px solid var(--glass-border);
   }
+  .lobby-form-col {
+    padding: 24px 20px;
+  }
+  .lobby-title {
+    font-size: 22px;
+  }
+
+  /* Drawer as full overlay */
   .side-drawer {
     position: absolute;
     right: 0;
     top: 0;
     bottom: 0;
     width: 100%;
-    max-width: 360px;
+    max-width: 380px;
     box-shadow: -10px 0 30px rgba(0,0,0,0.7);
   }
-  .pip-video-container {
-    width: 160px;
-    top: 16px;
-    right: 16px;
+
+  /* Spotlight on mobile: stacked layout (presentation on top, filmstrip below) */
+  .spotlight-layout {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .spotlight-main {
+    flex: 1;
+    min-height: 0;
+  }
+  .filmstrip-sidebar {
+    width: 100%;
+    height: 100px;
+    padding: 8px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .filmstrip-header {
+    display: none;
+  }
+  .filmstrip-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 8px;
+    padding-right: 0;
+  }
+  .filmstrip-item-wrap {
+    width: 130px;
+    height: 100%;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Video Stage Container */
+  .video-stage {
+    padding: 10px 10px calc(76px + env(safe-area-inset-bottom, 0px)) 10px;
+  }
+
+  .video-grid-container {
+    gap: 8px;
+    max-height: 100%;
+  }
+
+  /* 1 Participant on Mobile */
+  .video-grid-container[data-count="1"] {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* 2 Participants on Mobile: Stacked vertically in portrait */
+  .video-grid-container[data-count="2"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    max-height: 100%;
+  }
+
+  /* 3 Participants on Mobile: 1 wider tile on top, 2 side-by-side below */
+  .video-grid-container[data-count="3"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    max-height: 100%;
+  }
+  .video-grid-container[data-count="3"] > :first-child {
+    grid-column: span 2;
+  }
+
+  /* 4 Participants on Mobile: 2x2 grid */
+  .video-grid-container[data-count="4"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    max-height: 100%;
+  }
+
+  /* 5 or 6 Participants on Mobile: 2 columns x 3 rows */
+  .video-grid-container[data-count="5"],
+  .video-grid-container[data-count="6"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    max-height: 100%;
+  }
+  .video-grid-container[data-count="5"] > :last-child {
+    grid-column: span 2;
+  }
+
+  /* 7+ Participants on Mobile: 2 columns with scroll */
+  .video-grid-container[data-count="7"],
+  .video-grid-container[data-count="8"],
+  .video-grid-container[data-count="9"],
+  .video-grid-container[data-count="10"],
+  .video-grid-container[data-count="11"],
+  .video-grid-container[data-count="12"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 1fr;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Participant Tile Tweaks on Mobile */
+  .participant-tile {
+    border-radius: var(--radius-lg);
+  }
+  .participant-tile .avatar-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+  .tile-info-pill {
+    bottom: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    font-size: 11px;
+    gap: 4px;
+    max-width: calc(100% - 16px);
+  }
+  .tile-name-label {
+    max-width: 85px;
+  }
+  .tile-actions {
+    opacity: 0.95;
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+  .btn-tile-action {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Top Nav on Mobile */
+  .top-nav {
+    height: 52px;
+    padding: 0 10px;
+  }
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+  }
+  .brand-name {
+    font-size: 15px;
+  }
+  .brand-group > div > div {
+    display: none; /* Hide encrypted subtitle on narrow mobile */
+  }
+  .room-badge-wrap {
+    gap: 4px;
+  }
+  #btn-copy-room {
+    padding: 4px 8px;
+    font-size: 11.5px;
+  }
+  #btn-copy-room span:first-child {
+    display: none; /* Hide 'Room:' text to save space */
+  }
+  #call-health-badge {
+    display: none; /* Hide latency pill on mobile to prevent overflow */
+  }
+  #call-participant-badge {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+  #call-timer-badge {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+
+  /* Control Dock on Mobile — fits cleanly within screen width */
+  .control-dock {
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 16px);
+    max-width: 390px;
+    padding: 6px 8px;
+    gap: 4px;
+    justify-content: space-around;
+  }
+  .control-dock .btn-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .control-dock .btn-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+  .control-dock #btn-hangup {
+    width: 42px;
+    height: 42px;
+  }
+  .dock-separator {
+    height: 20px;
+    margin: 0 1px;
+  }
+
+  /* Empty room prompt on mobile */
+  .empty-room-prompt {
+    bottom: 86px;
+    width: calc(100% - 24px);
+    max-width: 340px;
+  }
+  .empty-room-card {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 440px) {
+  .brand-name {
+    display: none; /* Hide brand name text on narrow phones so header never wraps */
+  }
+}
+
+@media (max-width: 380px) {
+  /* Extra narrow devices (iPhone SE / 320px-360px) */
+  .control-dock {
+    width: calc(100% - 10px);
+    padding: 4px 6px;
+    gap: 2px;
+  }
+  .control-dock .btn-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .control-dock #btn-hangup {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  #btn-toggle-stats {
+    display: none; /* Hide stats button on extra narrow devices to keep dock clean */
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Mobile Landscape */
+  .top-nav {
+    height: 44px;
+    padding: 0 12px;
+  }
+  .video-stage {
+    padding: 8px 12px 60px 12px;
+  }
+  .control-dock {
+    bottom: 6px;
+    padding: 4px 10px;
+  }
+  .video-grid-container[data-count="2"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr;
+  }
+  .video-grid-container[data-count="3"] {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
+  .video-grid-container[data-count="3"] > :first-child {
+    grid-column: auto;
   }
 }
